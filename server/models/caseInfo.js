@@ -18,7 +18,7 @@ const caseInfo = new mongoose.Schema({
   ],
   prevDates: [
     {
-      type: Date,
+      date: Date,
     },
   ],
   lastDate: {
@@ -27,6 +27,18 @@ const caseInfo = new mongoose.Schema({
   accusedStatus: {
     type: Number,
   },
+  nextHearingDate: {
+    type: Date,
+  },
+  acceptedCount: {
+    type: Number,
+  },
+  hearingDates: [
+    {
+      proposed: Date,
+      accepted: Date,
+    },
+  ],
 });
 
 const CaseInfo = new mongoose.model("caseInfo", caseInfo);
