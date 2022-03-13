@@ -5,75 +5,77 @@ import './App.css';
 import GridTable from "@nadavshaar/react-grid-table";
 import { useState,useEffect } from 'react';
 import getColumns from "./getColumns.js";
+import axios from 'axios';
+import moment from 'moment';
 
-const data = [
-  {
-    id: 1,
-    caseId: "1289",
-    domain: "Violence",
-    sections: "301,302",
-    accusedStatus: "on Bail",
-    // chargesheetDate: "12/08/2019",
-    lastHearingDate: "12/08/2019",
-    proposedDate: "12/08/2019",
-    acceptedDate: "06/10/2019",
-  },
-  {
-    id: 2,
-    caseId: "3242",
-    domain: "Robbery",
-    sections: "102,101",
-    accusedStatus: "In Jail",
-    // chargesheetDate: "12/01/2018",
-    lastHearingDate: "02/01/2018",
-    proposedDate: "12/08/2019",
-    acceptedDate: "12/08/2019",
-  },
-  {
-    id: 3,
-    caseId: "4219",
-    domain: "Mischief",
-    sections: "426",
-    accusedStatus: "on Run",
-    // chargesheetDate: "12/08/2019",
-    lastHearingDate: "12/08/2019",
-    proposedDate: "12/08/2019",
-    acceptedDate: "12/08/2019",
-  },
-  {
-    id: 4,
-    caseId: "3219",
-    domain: "Tresspass",
-    sections: "447,448",
-    accusedStatus: "on Bail",
-    // chargesheetDate: "12/08/2019",
-    lastHearingDate: "12/08/2019",
-    proposedDate: "12/08/2019",
-    acceptedDate: "12/08/2019",
-  },
-  {
-    id: 5,
-    caseId: "3001",
-    domain: "Violence",
-    sections: "301,302",
-    accusedStatus: "on Bail",
-    // chargesheetDate: "12/08/2019",
-    lastHearingDate: "12/08/2019",
-    proposedDate: "12/08/2019",
-    acceptedDate: "12/08/2019",
-  },
-  {
-    id: 6,
-    caseId: "109",
-    domain: "Forgery",
-    sections: "465,466,468",
-    accusedStatus: "In Jail",
-    // chargesheetDate: "12/08/2019",
-    lastHearingDate: "12/08/2019",
-    proposedDate: "2/01/2022",
-    acceptedDate: "2/01/2022",
-  },
-]
+// const data = [
+//   {
+//     id: 1,
+//     caseId: "1289",
+//     domain: "Violence",
+//     sections: "301,302",
+//     accusedStatus: "on Bail",
+//     // chargesheetDate: "12/08/2019",
+//     lastHearingDate: "12/08/2019",
+//     proposedDate: "12/08/2019",
+//     acceptedDate: "06/10/2019",
+//   },
+//   {
+//     id: 2,
+//     caseId: "3242",
+//     domain: "Robbery",
+//     sections: "102,101",
+//     accusedStatus: "In Jail",
+//     // chargesheetDate: "12/01/2018",
+//     lastHearingDate: "02/01/2018",
+//     proposedDate: "12/08/2019",
+//     acceptedDate: "12/08/2019",
+//   },
+//   {
+//     id: 3,
+//     caseId: "4219",
+//     domain: "Mischief",
+//     sections: "426",
+//     accusedStatus: "on Run",
+//     // chargesheetDate: "12/08/2019",
+//     lastHearingDate: "12/08/2019",
+//     proposedDate: "12/08/2019",
+//     acceptedDate: "12/08/2019",
+//   },
+//   {
+//     id: 4,
+//     caseId: "3219",
+//     domain: "Tresspass",
+//     sections: "447,448",
+//     accusedStatus: "on Bail",
+//     // chargesheetDate: "12/08/2019",
+//     lastHearingDate: "12/08/2019",
+//     proposedDate: "12/08/2019",
+//     acceptedDate: "12/08/2019",
+//   },
+//   {
+//     id: 5,
+//     caseId: "3001",
+//     domain: "Violence",
+//     sections: "301,302",
+//     accusedStatus: "on Bail",
+//     // chargesheetDate: "12/08/2019",
+//     lastHearingDate: "12/08/2019",
+//     proposedDate: "12/08/2019",
+//     acceptedDate: "12/08/2019",
+//   },
+//   {
+//     id: 6,
+//     caseId: "109",
+//     domain: "Forgery",
+//     sections: "465,466,468",
+//     accusedStatus: "In Jail",
+//     // chargesheetDate: "12/08/2019",
+//     lastHearingDate: "12/08/2019",
+//     proposedDate: "2/01/2022",
+//     acceptedDate: "2/01/2022",
+//   },
+// ]
 
 function Main() {
     const [clicked,setClicked] = useState(false); 
@@ -83,10 +85,32 @@ function Main() {
     const [isLoading, setLoading] = useState(false);
     useEffect(() => {
       setLoading(true);
-      setTimeout(() => {
-        setRowsData(data);
-        setLoading(false);
-      }, 1500);
+      // setRowsData(data);
+      axios.get('http://localhost:4000/api/cases/getcase').then(res => {
+        // console.log(res.data)
+        let data = []
+        res.data.data.map((item,idx) => {
+         let sections=""
+         item.section.map(temp => {
+           if(sections.length===0) sections+=temp.name 
+           else sections=sections+","+temp.name
+         })
+         data.push({
+           id:idx,
+           caseId:item.case_id,
+           domain:item.domain,
+           sections,
+           accusedStatus:item.accusedStatus===0?"On Bail" :item.accusedStatus===1? "On Run" : "In Jail" ,
+           lastHearingDate:moment(item.lastDate).format("YYYY-MM-DD"),
+           proposedDate: "2022-02-01",
+           acceptedDate: item.nextHearingDate ? moment(item.nextHearingDate).format("YYYY-MM-DD") :"Select a Date",
+
+         })
+        })
+        setRowsData(data)
+      }).catch(error => {
+        console.log(error)
+      })
     }, []);
     
 
