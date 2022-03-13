@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const CaseInfo =  new mongoose.Schema({
+const caseInfo =  new mongoose.Schema({
     case_id: {
         type : String,
         required : true
@@ -27,3 +27,7 @@ const CaseInfo =  new mongoose.Schema({
 
 
 });
+
+const caseInfo = new mongoose.model("caseInfo", caseInfo);
+module.exports = casesInfo;
+
