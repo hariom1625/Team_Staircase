@@ -8,14 +8,14 @@ const caseInfo =  new mongoose.Schema({
     domain:{
         type : String,
     },
-    chargSheetDate:{
+    chargesheetDate:{
         type : Date,
     },
     section:[{
         name : String,
     }],
-    prevoiusDates:[{
-        dates:Date,
+    prevDates:[{
+        type:Date,
     }],
     lastDate:{
         type : Date,
