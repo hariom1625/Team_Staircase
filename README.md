@@ -21,3 +21,11 @@ The algorithm developed by our team will help in priortizing and allocation of d
          2. Proposing/Allocating optimal dates against absurd demand of lawyer
          3. Minimize human involvement in allocation of hearing dates to court cases
          4. Reduce impartiality and avoid stalling of cases
+         
+# Getting started
+- Fork the repository
+- Clone in to your machine
+- Open terminal in the src directory
+- cd server && npm i && npm run devserver
+- cd .. && cd client
+- npm install && npm start
