@@ -7,8 +7,8 @@ import { useState, useEffect } from "react";
 import getColumns from "./getColumns.js";
 import axios from "axios";
 import moment from "moment";
-import code from "./code.txt";
-import input from "./input.txt";
+import code from "./MainAlgoToPrioritizeInCPP.txt";
+import input from "./SampleInput.txt";
 
 // const data = [
 //   {
@@ -126,10 +126,10 @@ function Main() {
                 ? "On Run"
                 : "In Jail",
             lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
-            proposedDate: "2022-02-01",
-            acceptedDate: item.nextHearingDate
-              ? moment(item.nextHearingDate).format("YYYY-MM-DD")
-              : "Select a Date",
+            proposedDate: moment(item.proposedDate).format("YYYY-MM-DD"),
+            acceptedDate: " ",
+            // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
+            // : "Select a Date",
           });
         });
         setRowsData(data);
@@ -234,9 +234,9 @@ function Main() {
             onClick={() => setClicked(!clicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>91</span>
+              <span style={{ fontSize: "76px" }}>9</span>
               <br></br>
-              <span>hearings today</span>
+              <span>Hearings today</span>
             </p>
           </div>
           <div
@@ -251,9 +251,9 @@ function Main() {
             onClick={() => setGreenClicked(!greenClicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>11</span>
+              <span style={{ fontSize: "76px" }}>6</span>
               <br></br>
-              <span>cases need validation</span>
+              <span>Cases need validation</span>
             </p>
           </div>
           <div
@@ -267,11 +267,11 @@ function Main() {
             onClick={() => setRedClicked(!redClicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>1103</span>
+              <span style={{ fontSize: "76px" }}>80</span>
               <br></br>
               <span>
-                cases has priority high but next proposed hearing date {">"}{" "}
-                1month
+                Cases has priority high but next proposed hearing date {">"} 1
+                Month
               </span>
             </p>
           </div>

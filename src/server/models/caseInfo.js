@@ -33,6 +33,9 @@ const caseInfo = new mongoose.Schema({
   acceptedCount: {
     type: Number,
   },
+  proposedDate: {
+    type: Date,
+  },
   hearingDates: [
     {
       proposed: Date,

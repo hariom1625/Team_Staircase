@@ -20,7 +20,7 @@ router.post("/newCase", async (req, res) => {
     newCase.lastDate = req.body.lastDate;
     newCase.accusedStatus = req.body.accusedStatus;
     newCase.nextHearingDate = req.body.nextHearingDate;
-
+    newCase.proposedDate = req.body.proposedDate;
     let newCaseModel = new CaseInfo(newCase);
     await newCaseModel.save();
     res.send("New Case Added");
@@ -34,16 +34,13 @@ router.get("/getCase", async (req, res) => {
   try {
     const caseInfo = await CaseInfo.find({});
     console.log(caseInfo);
-    res.status(200).send({data: caseInfo});
+    res.status(200).send({ data: caseInfo });
   } catch (error) {
     console.log(error);
-    res.status(400).send({error: error});
-  
+    res.status(400).send({ error: error });
   }
-  });
+});
 
-  // for updating all the cases
-
-
+// for updating all the cases
 
 module.exports = router;
