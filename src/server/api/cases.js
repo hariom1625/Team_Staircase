@@ -15,7 +15,11 @@ router.post("/newCase", async (req, res) => {
     console.log(mp.get(3));
     newCase.case_id = req.body.case_id;
     newCase.domain = req.body.domain;
-    newCase.section = req.body.section.split(',');
+   
+    let temp=[]
+    req.body.section.split(',').map(item => temp.push({name:item}))
+    newCase.section = temp;
+    // console.log(req.body.section,typeof req.body.section.split(','),req.body.section.split(','),newCase.section)
     // newCase.prevDates = req.body.prevDates ||  "";
     newCase.lastDate = req.body.lastDate;
     newCase.accusedStatus = req.body.accusedStatus || "";
@@ -40,6 +44,7 @@ router.get("/getCase", async (req, res) => {
     res.status(400).send({ error: error });
   }
 });
+
 
 // for updating all the cases
 
