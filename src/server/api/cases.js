@@ -45,6 +45,34 @@ router.get("/getCase", async (req, res) => {
   }
 });
 
+router.get("/sampleInput", async (req, res) => {
+  try {
+    const caseInfo = await CaseInfo.find({});
+    console.log(caseInfo);
+    let ans = ""
+    ans+=caseInfo.length.toString()+" ";
+    caseInfo.map(item =>{ 
+      ans+=item.case_id.toString()+" ";
+      if(!item.accusedStatus) item.accusedStatus=1
+      ans+=item.accusedStatus.toString()+" ";
+      if(!item.chargesheetDate)item.chargesheetDate = new Date()
+      let epoch = (item.chargesheetDate.getTime()-item.chargesheetDate.getMilliseconds())/1000;
+      ans+=epoch.toString()+" ";
+      ans+=item.section.length.toString()+" ";
+      item.section.forEach(sec => {
+        ans+=sec.name.toString()+" ";
+      })
+      if(!item.lastDate)item.lastDate = new Date();
+      epoch = (item.lastDate.getTime()-item.lastDate.getMilliseconds())/1000;
+      ans+=epoch.toString()+" ";
+    })
+
+    res.status(200).send({ data: ans });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ error: error });
+  }
+});
 
 // for updating all the cases
 
