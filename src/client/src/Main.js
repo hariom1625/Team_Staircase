@@ -90,6 +90,7 @@ function Main() {
   const [isLoading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [caseIdToSearch, setCaseIdToSearch] = useState("Type Case ID");
+  const [selectedCaseId, setCaseId] = useState("");
   const [newCaseData, setNewCaseData] = useState({
     case_id: "",
     domain: "",
@@ -423,7 +424,7 @@ function Main() {
       </div>
       <div className="react-table">
         <GridTable
-          columns={getColumns({ setRowsData }, startDate, setStartDate)}
+          columns={getColumns({ setRowsData }, startDate, setStartDate,setCaseId)}
           rows={tempRowsData}
           isPaginated={false}
           // isLoading={isLoading}
@@ -560,6 +561,38 @@ function Main() {
                   ></input>
                   {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
                 </div>
+                <div class="mb-3">
+                  <label for="heading" class="form-label">
+                    Heading
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="heading"
+                    aria-describedby="heading"
+                    value={newCaseData.heading || ""}
+                    onChange={(event) => {
+                      let temp = JSON.parse(JSON.stringify(newCaseData));
+                      temp[event.target.id] = event.target.value;
+                      setNewCaseData(temp);
+                    }}
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">
+                    Description
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    aria-describedby="description"
+                    value={newCaseData.description || ""}
+                    onChange={(event) => {
+                      let temp = JSON.parse(JSON.stringify(newCaseData));
+                      temp[event.target.id] = event.target.value;
+                      setNewCaseData(temp);
+                    }}
+                  ></textarea>
+                </div>
               </form>
             </div>
             <div class="modal-footer">
@@ -582,6 +615,23 @@ function Main() {
           </div>
         </div>
       </div>
+      <div class="modal fade" id="caseModal" tabindex="-1" aria-labelledby="caseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="caseModalLabel">Case ID {selectedCaseId}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       <h3>{rowsData.filter(item => item.caseId===selectedCaseId)[0].heading || ""}</h3>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0].description || ""}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   );
 }
