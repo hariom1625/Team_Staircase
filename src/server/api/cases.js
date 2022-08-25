@@ -15,9 +15,9 @@ router.post("/newCase", async (req, res) => {
     console.log(mp.get(3));
     newCase.case_id = req.body.case_id;
     newCase.domain = req.body.domain;
-   
-    let temp=[]
-    req.body.section.split(',').map(item => temp.push({name:item}))
+
+    let temp = [];
+    req.body.section.split(",").map((item) => temp.push({ name: item }));
     newCase.section = temp;
     // console.log(req.body.section,typeof req.body.section.split(','),req.body.section.split(','),newCase.section)
     // newCase.prevDates = req.body.prevDates ||  "";
@@ -49,23 +49,27 @@ router.get("/sampleInput", async (req, res) => {
   try {
     const caseInfo = await CaseInfo.find({});
     console.log(caseInfo);
-    let ans = ""
-    ans+=caseInfo.length.toString()+" ";
-    caseInfo.map(item =>{ 
-      ans+=item.case_id.toString()+" ";
-      if(!item.accusedStatus) item.accusedStatus=1
-      ans+=item.accusedStatus.toString()+" ";
-      if(!item.chargesheetDate)item.chargesheetDate = new Date()
-      let epoch = (item.chargesheetDate.getTime()-item.chargesheetDate.getMilliseconds())/1000;
-      ans+=epoch.toString()+" ";
-      ans+=item.section.length.toString()+" ";
-      item.section.forEach(sec => {
-        ans+=sec.name.toString()+" ";
-      })
-      if(!item.lastDate)item.lastDate = new Date();
-      epoch = (item.lastDate.getTime()-item.lastDate.getMilliseconds())/1000;
-      ans+=epoch.toString()+" ";
-    })
+    let ans = "";
+    ans += caseInfo.length.toString() + " ";
+    caseInfo.map((item) => {
+      ans += item.case_id.toString() + " ";
+      if (!item.accusedStatus) item.accusedStatus = 1;
+      ans += item.accusedStatus.toString() + " ";
+      if (!item.chargesheetDate) item.chargesheetDate = new Date();
+      let epoch =
+        (item.chargesheetDate.getTime() -
+          item.chargesheetDate.getMilliseconds()) /
+        1000;
+      ans += epoch.toString() + " ";
+      ans += item.section.length.toString() + " ";
+      item.section.forEach((sec) => {
+        ans += sec.name.toString() + " ";
+      });
+      if (!item.lastDate) item.lastDate = new Date();
+      epoch =
+        (item.lastDate.getTime() - item.lastDate.getMilliseconds()) / 1000;
+      ans += epoch.toString() + " ";
+    });
 
     res.status(200).send({ data: ans });
   } catch (error) {
@@ -75,5 +79,18 @@ router.get("/sampleInput", async (req, res) => {
 });
 
 // for updating all the cases
+
+router.post("/saveNextHearingDate", async (req, res) => {
+  try {
+    const caseInfo = await CaseInfo.findOne({ case_id: req.body.case_id });
+    caseInfo.nextHearingDate = req.body.nextHearingDate;
+    caseInfo.save();
+    console.log(caseInfo);
+    res.status(200).send({ data: caseInfo });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ error: error });
+  }
+});
 
 module.exports = router;
