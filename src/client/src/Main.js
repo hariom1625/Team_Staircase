@@ -97,33 +97,9 @@ function Main() {
     lastDate: "",
     accusedStatus: "",
   });
-  const [caseId, setCaseId] = useState("");
-  const addNewCase = () => {
-    axios
-      .post("http://localhost:4000/api/cases/newCase", newCaseData)
-      .then((res) => {
-        console.log("Added");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
-  useEffect(() => {
-    setLoading(true);
-    console.log(code);
-    // setRowsData(data);
-
-    fetch(code)
-      .then((r) => r.text())
-      .then((text) => (algo1 = text));
-    fetch(input)
-      .then((r) => r.text())
-      .then((text) => {
-        input1 = text;
-        // submit();
-      });
-
+  const [sortedCases,setSortedCases] = useState("");
+  const reload  = () => {
     axios
       .get("http://localhost:4000/api/cases/getcase")
       .then((res) => {
@@ -147,7 +123,7 @@ function Main() {
                 ? "On Run"
                 : "In Jail",
             lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
-            proposedDate: moment(item.proposedDate).format("YYYY-MM-DD"),
+            proposedDate: "TBD",
             acceptedDate: "",
             // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
             // : "Select a Date",
@@ -155,13 +131,106 @@ function Main() {
         });
         setRowsData(data);
         setTempRowsData(data);
+        generateSampleInput(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  const addNewCase = () => {
+    newCaseData.chargesheetDate = moment(newCaseData.chargesheetDate, "YYYY-MM-DD").utc()
+    newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc()
+    axios
+      .post("http://localhost:4000/api/cases/newCase", newCaseData)
+      .then((res) => {
+        console.log("Added");
+        reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const prioritizeCases = (output,data) => {
+    let currDate = new Date();
+    let bandWidth = 5;
+    let temp = [];
+    output.split(/\r?\n/).forEach((item,idx) => {
+      // if(item.length===0) return;
+      console.log(typeof item,item.length,item,idx,data)
+        if(item.length!=0 && data!=0){
+        if(idx!=0 && idx%bandWidth==0) currDate.setDate(currDate.getDate() + 1);
+        let tempCase = data.filter(item1 => item1.caseId === item)[0]
+  
+        if(!tempCase) console.log(tempCase,data,item);
+        tempCase.proposedDate = moment(currDate).format("YYYY-MM-DD");
+        temp.push(tempCase);
+        }
+     
+    })
+    console.log('hurray',temp,data,currDate);
+    setTempRowsData(temp);
+  }
+  const generateSampleInput = (data) => {
+    axios
+      .get("http://localhost:4000/api/cases/sampleInput")
+      .then((res) => {
+        console.log(res.data.data)
+        // setSampleInput(res.data.data)
+        fetch(code)
+        .then((r) => r.text())
+        .then((text) => {
+          algo1 = text
+          input1 = res.data.data;
+          submit(data);
+        });
+     
+       
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get("http://localhost:4000/api/cases/getcase")
+      .then((res) => {
+        // console.log(res.data)
+
+        res.data.data.map((item, idx) => {
+          let sections = "";
+          item.section.map((temp) => {
+            if (sections.length === 0) sections += temp.name;
+            else sections = sections + "," + temp.name;
+          });
+          data.push({
+            id: idx + 1,
+            caseId: item.case_id,
+            domain: item.domain,
+            sections,
+            accusedStatus:
+              item.accusedStatus === 0
+                ? "On Bail"
+                : item.accusedStatus === 1
+                ? "On Run"
+                : "In Jail",
+            lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
+            proposedDate: "TBD",
+            acceptedDate: "",
+            // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
+            // : "Select a Date",
+          });
+        });
+        setRowsData(data);
+        setTempRowsData(data);
+        generateSampleInput(data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  const submit = async () => {
+  const submit = async (data) => {
     console.log(algo1 + input1);
     const response = await fetch(
       "https://judge0-ce.p.rapidapi.com/submissions",
@@ -214,6 +283,8 @@ function Main() {
     if (jsonGetSolution.stdout) {
       const output = atob(jsonGetSolution.stdout);
       console.log(output);
+      setSortedCases(output);
+      prioritizeCases(output,data)
     } else if (jsonGetSolution.stderr) {
       const error = atob(jsonGetSolution.stderr);
       console.log(error + "err");
@@ -431,6 +502,24 @@ function Main() {
                     id="accusedStatus"
                     aria-describedby="accusedStatus"
                     value={newCaseData.accusedStatus}
+                    onChange={(event) => {
+                      let temp = JSON.parse(JSON.stringify(newCaseData));
+                      temp[event.target.id] = event.target.value;
+                      setNewCaseData(temp);
+                    }}
+                  ></input>
+                  {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+                </div>
+                <div class="mb-3">
+                  <label for="chargesheetDate" class="form-label">
+                    Chargesheet Date
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="chargesheetDate"
+                    aria-describedby="chargesheetDate"
+                    value={newCaseData.chargesheetDate}
                     onChange={(event) => {
                       let temp = JSON.parse(JSON.stringify(newCaseData));
                       temp[event.target.id] = event.target.value;
