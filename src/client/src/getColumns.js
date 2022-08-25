@@ -1,6 +1,7 @@
 import React from "react";
+import DatePicker from "react-datepicker";
 
-const EDIT_SVG = (
+const EDIT_SVG = ( 
   <svg
     height="16"
     viewBox="0 0 20 20"
@@ -96,7 +97,7 @@ const styles = {
   }
 };
 
-const getColumns = ({ setRowsData }) => {
+const getColumns = ({ setRowsData },startDate,setStartDate) => {
   return [
     {
         id: 1,
@@ -193,6 +194,11 @@ const getColumns = ({ setRowsData }) => {
         rowIndex,
         onChange
       }) => (
+       <React.Fragment>
+         {/* <label>
+          <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+        </label> */}
+      
         <div style={styles.buttonsCellEditorContainer}>
           <button
             title="Cancel"
@@ -221,6 +227,7 @@ const getColumns = ({ setRowsData }) => {
             {SAVE_SVG}
           </button>
         </div>
+        </React.Fragment>
       )
     },
     // {

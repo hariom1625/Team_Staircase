@@ -15,12 +15,12 @@ router.post("/newCase", async (req, res) => {
     console.log(mp.get(3));
     newCase.case_id = req.body.case_id;
     newCase.domain = req.body.domain;
-    newCase.section = req.body.section;
-    newCase.prevDates = req.body.prevDates;
+    newCase.section = req.body.section.split(',');
+    // newCase.prevDates = req.body.prevDates ||  "";
     newCase.lastDate = req.body.lastDate;
-    newCase.accusedStatus = req.body.accusedStatus;
-    newCase.nextHearingDate = req.body.nextHearingDate;
-    newCase.proposedDate = req.body.proposedDate;
+    newCase.accusedStatus = req.body.accusedStatus || "";
+    newCase.nextHearingDate = req.body.nextHearingDate || "";
+    newCase.proposedDate = req.body.proposedDate || "";
     let newCaseModel = new CaseInfo(newCase);
     await newCaseModel.save();
     res.send("New Case Added");

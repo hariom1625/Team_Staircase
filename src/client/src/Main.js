@@ -86,7 +86,28 @@ function Main() {
   const [redClicked, setRedClicked] = useState(false);
   const [greenClicked, setGreenClicked] = useState(false);
   const [rowsData, setRowsData] = useState([]);
+  const [tempRowsData, setTempRowsData] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [caseIdToSearch,setCaseIdToSearch] = useState("Type Case ID");
+  const [newCaseData, setNewCaseData] = useState({
+    case_id:"",
+    domain:"",
+    section:"",
+    lastDate:"",
+    accusedStatus:"",
+  });
+  const [caseId, setCaseId] = useState("");
+  const addNewCase = () => {
+    axios
+      .post("http://localhost:4000/api/cases/newCase",newCaseData)
+      .then((res) => {
+        console.log("Added");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -100,7 +121,7 @@ function Main() {
       .then((r) => r.text())
       .then((text) => {
         input1 = text;
-        submit();
+        // submit();
       });
 
     axios
@@ -115,7 +136,7 @@ function Main() {
             else sections = sections + "," + temp.name;
           });
           data.push({
-            id: idx,
+            id: idx+1,
             caseId: item.case_id,
             domain: item.domain,
             sections,
@@ -127,12 +148,13 @@ function Main() {
                 : "In Jail",
             lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
             proposedDate: moment(item.proposedDate).format("YYYY-MM-DD"),
-            acceptedDate: " ",
+            acceptedDate: "",
             // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
             // : "Select a Date",
           });
         });
         setRowsData(data);
+        setTempRowsData(data)
       })
       .catch((error) => {
         console.log(error);
@@ -201,7 +223,8 @@ function Main() {
 
   return (
     <div className="Main">
-      <div className="search-bar">
+      <div className="d-flex">
+      <div className="search-bar" style={{width:"85vw"}}>
         <div className="d-flex search-bar-box">
           <div>
             <img src={bars} style={{ width: "25px", margin: "5px 10px" }}></img>
@@ -209,16 +232,35 @@ function Main() {
           <input
             style={{ width: "95%" }}
             className="search-text"
-            value="Type Case ID here"
+            value={caseIdToSearch}
+            onChange = {(event) => {
+              setCaseIdToSearch(event.target.value)
+            }}
+
           ></input>
           <div>
             <img
               src={search}
-              style={{ width: "25px", margin: "5px 10px" }}
+              style={{ width: "25px", margin: "5px 10px",cursor:"pointer" }}
+              onClick = {() => {
+                
+                if(caseIdToSearch.trim().length===0){
+                  setTempRowsData(rowsData);
+                }
+                else{
+                  let temp = rowsData.filter(item => item.caseId == caseIdToSearch)
+                  console.log("clicked",temp,caseIdToSearch,rowsData,rowsData.filter(item => item.caseId == '3'));
+                  setTempRowsData(temp);
+                }
+              }}
             ></img>
           </div>
         </div>
       </div>
+      <button style={{width:"10vw",height:"40px",marginTop:"30px",marginLeft:"20px"}} type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Add Data
+</button>
+</div>
       <div className="widget-container">
         <div className="d-flex widget-box">
           <div
@@ -270,7 +312,7 @@ function Main() {
               <span style={{ fontSize: "76px" }}>80</span>
               <br></br>
               <span>
-                Cases has priority high but next proposed hearing date {">"} 1
+                Cases which has last hearing date {">"} 6
                 Month
               </span>
             </p>
@@ -279,12 +321,78 @@ function Main() {
       </div>
       <div className="react-table">
         <GridTable
-          columns={getColumns({ setRowsData })}
-          rows={rowsData}
+          columns={getColumns({ setRowsData },startDate,setStartDate)}
+          rows={tempRowsData}
           isPaginated={false}
-          isLoading={isLoading}
+          // isLoading={isLoading}
         />
       </div>
+      {/* <!-- Modal --> */}
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add new case</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form>
+      <div class="mb-3">
+            <label for="case_id" class="form-label">Case Id {newCaseData.case_id}</label>
+            <input type="text" class="form-control" id="case_id" aria-describedby="case_id" value={newCaseData.case_id}
+             onChange={(event) => {
+              let temp = JSON.parse(JSON.stringify(newCaseData));
+              temp[event.target.id] = event.target.value;
+              setNewCaseData(temp);
+            }}></input>
+            {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+          </div>
+          <div class="mb-3">
+            <label for="domain" class="form-label">Domain</label>
+            <input type="text" class="form-control" id="domain" aria-describedby="domain" value={newCaseData.domain} onChange={(event) => {
+               let temp = JSON.parse(JSON.stringify(newCaseData));
+              temp[event.target.id] = event.target.value;
+              setNewCaseData(temp);
+            }}></input>
+            {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+          </div>
+          <div class="mb-3">
+            <label for="section" class="form-label">Sections</label>
+            <input type="text" class="form-control" id="section" aria-describedby="section" value={newCaseData.section} onChange={(event) => {
+               let temp = JSON.parse(JSON.stringify(newCaseData));
+              temp[event.target.id] = event.target.value;
+              setNewCaseData(temp);
+            }}></input>
+            {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+          </div>
+          <div class="mb-3">
+            <label for="accusedStatus" class="form-label">Accused Status</label>
+            <input type="text" class="form-control" id="accusedStatus" aria-describedby="accusedStatus" value={newCaseData.accusedStatus} onChange={(event) => {
+               let temp = JSON.parse(JSON.stringify(newCaseData));
+              temp[event.target.id] = event.target.value;
+              setNewCaseData(temp);
+            }}></input>
+            {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+          </div>
+          <div class="mb-3">
+            <label for="lastDate" class="form-label">Last Hearing Date</label>
+            <input type="text" class="form-control" id="lastDate" aria-describedby="lastDate" value={newCaseData.lastDate} onChange={(event) => {
+               let temp = JSON.parse(JSON.stringify(newCaseData));
+              temp[event.target.id] = event.target.value;
+              setNewCaseData(temp);
+            }}></input>
+            {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
+          </div>
+          
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={addNewCase}>Add</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   );
 }
