@@ -1,3 +1,4 @@
+const { text } = require("express");
 const mongoose = require("mongoose");
 
 const caseInfo = new mongoose.Schema({
@@ -40,6 +41,12 @@ const caseInfo = new mongoose.Schema({
     {
       proposed: Date,
       accepted: Date,
+    },
+  ],
+  details:[
+    {
+      heading:String,
+      desciption:text,
     },
   ],
 });
