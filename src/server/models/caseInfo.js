@@ -46,7 +46,7 @@ const caseInfo = new mongoose.Schema({
   details:[
     {
       heading:String,
-      desciption:text,
+      description:String,
     },
   ],
 });
