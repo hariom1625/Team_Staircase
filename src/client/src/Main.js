@@ -98,8 +98,8 @@ function Main() {
     accusedStatus: "",
   });
 
-  const [sortedCases,setSortedCases] = useState("");
-  const reload  = () => {
+  const [sortedCases, setSortedCases] = useState("");
+  const reload = () => {
     axios
       .get("http://localhost:4000/api/cases/getcase")
       .then((res) => {
@@ -136,10 +136,13 @@ function Main() {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
   const addNewCase = () => {
-    newCaseData.chargesheetDate = moment(newCaseData.chargesheetDate, "YYYY-MM-DD").utc()
-    newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc()
+    newCaseData.chargesheetDate = moment(
+      newCaseData.chargesheetDate,
+      "YYYY-MM-DD"
+    ).utc();
+    newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc();
     axios
       .post("http://localhost:4000/api/cases/newCase", newCaseData)
       .then((res) => {
@@ -150,46 +153,44 @@ function Main() {
         console.log(error);
       });
   };
-  const prioritizeCases = (output,data) => {
+  const prioritizeCases = (output, data) => {
     let currDate = new Date();
     let bandWidth = 5;
     let temp = [];
-    output.split(/\r?\n/).forEach((item,idx) => {
+    output.split(/\r?\n/).forEach((item, idx) => {
       // if(item.length===0) return;
-      console.log(typeof item,item.length,item,idx,data)
-        if(item.length!=0 && data!=0){
-        if(idx!=0 && idx%bandWidth==0) currDate.setDate(currDate.getDate() + 1);
-        let tempCase = data.filter(item1 => item1.caseId === item)[0]
-  
-        if(!tempCase) console.log(tempCase,data,item);
+      console.log(typeof item, item.length, item, idx, data);
+      if (item.length != 0 && data != 0) {
+        if (idx != 0 && idx % bandWidth == 0)
+          currDate.setDate(currDate.getDate() + 1);
+        let tempCase = data.filter((item1) => item1.caseId === item)[0];
+
+        if (!tempCase) console.log(tempCase, data, item);
         tempCase.proposedDate = moment(currDate).format("YYYY-MM-DD");
         temp.push(tempCase);
-        }
-     
-    })
-    console.log('hurray',temp,data,currDate);
+      }
+    });
+    console.log("hurray", temp, data, currDate);
     setTempRowsData(temp);
-  }
+  };
   const generateSampleInput = (data) => {
     axios
       .get("http://localhost:4000/api/cases/sampleInput")
       .then((res) => {
-        console.log(res.data.data)
+        console.log(res.data.data);
         // setSampleInput(res.data.data)
         fetch(code)
-        .then((r) => r.text())
-        .then((text) => {
-          algo1 = text
-          input1 = res.data.data;
-          submit(data);
-        });
-     
-       
+          .then((r) => r.text())
+          .then((text) => {
+            algo1 = text;
+            input1 = res.data.data;
+            submit(data);
+          });
       })
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
   useEffect(() => {
     setLoading(true);
     axios
@@ -284,7 +285,7 @@ function Main() {
       const output = atob(jsonGetSolution.stdout);
       console.log(output);
       setSortedCases(output);
-      prioritizeCases(output,data)
+      prioritizeCases(output, data);
     } else if (jsonGetSolution.stderr) {
       const error = atob(jsonGetSolution.stderr);
       console.log(error + "err");
@@ -295,7 +296,7 @@ function Main() {
 
   return (
     <div className="Main">
-      <div className="d-flex" style={{padding:"30px"}}>
+      <div className="d-flex" style={{ padding: "30px" }}>
         <div className="search-bar" style={{ width: "85vw" }}>
           <div className="d-flex search-bar-box">
             <div>
@@ -360,8 +361,10 @@ function Main() {
           }}
           type="button"
           className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          onClick={() => {
+            localStorage.setItem("isLoggedIn", "false");
+            window.location.reload(true);
+          }}
         >
           Logout
         </button>

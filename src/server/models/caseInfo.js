@@ -43,10 +43,10 @@ const caseInfo = new mongoose.Schema({
       accepted: Date,
     },
   ],
-  details:[
+  details: [
     {
-      heading:String,
-      desciption:text,
+      heading: String,
+      description: String,
     },
   ],
 });
