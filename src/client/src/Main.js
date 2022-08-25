@@ -295,7 +295,7 @@ function Main() {
 
   return (
     <div className="Main">
-      <div className="d-flex">
+      <div className="d-flex" style={{padding:"30px"}}>
         <div className="search-bar" style={{ width: "85vw" }}>
           <div className="d-flex search-bar-box">
             <div>
@@ -350,6 +350,20 @@ function Main() {
           data-bs-target="#exampleModal"
         >
           Add Data
+        </button>
+        <button
+          style={{
+            width: "10vw",
+            height: "40px",
+            marginTop: "30px",
+            marginLeft: "20px",
+          }}
+          type="button"
+          className="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          Logout
         </button>
       </div>
       <div className="widget-container">
