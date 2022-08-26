@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import Login from "./Login";
 import Main from "./Main";
+import JudgeMain from "./JudgeMain";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Login />} />
           <Route exact path="/registrarView" element={<Main />} />
+          <Route exact path="/judgeView" element={<JudgeMain />} />
         </Routes>
       </Router>
     </div>

@@ -33,10 +33,11 @@ router.post("/checkCredential", async (req, res) => {
     const userInfo = await UserInfo.findOne({
       userName: req.body.userName,
       password: req.body.password,
-      userType: req.body.userType,
+      userType: req.body.userType, 
+      // 0 for registrar and 1 for judge 
     });
-    if (userInfo != NULL) res.send({ date: true });
-    else res.send({ date: false });
+    if (userInfo != null) res.status(200).send({ data: true });
+    else res.send({ data: false });
   } catch (error) {
     console.log("Incorrect Credential");
     res.send(400);

@@ -9,7 +9,7 @@ const userInfo=new mongoose.Schema({
         type:String,
     },
     userType:{
-        type:Int,
+        type:Number,
     },
     userName:{
         type:String

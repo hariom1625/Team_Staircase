@@ -4,7 +4,7 @@ import search from "./img/search.svg";
 import "./App.css";
 import GridTable from "@nadavshaar/react-grid-table";
 import { useState, useEffect } from "react";
-import getColumns from "./getColumns.js";
+import getColumns2 from "./getColumns2.js";
 import axios from "axios";
 import moment from "moment";
 import code from "./MainAlgoToPrioritizeInCPP.cpp";
@@ -126,7 +126,8 @@ function Main() {
                 : "In Jail",
             lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
             proposedDate: "TBD",
-            acceptedDate: "",
+            acceptedDate: "Loading",
+            
             // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
             // : "Select a Date",
           });
@@ -181,7 +182,6 @@ function Main() {
     setTempRowsData(temp);
   };
   const generateSampleInput = (data) => {
-    alert("processing,please wait!");
     axios
       .get("http://localhost:4000/api/cases/sampleInput")
       .then((res) => {
@@ -225,15 +225,16 @@ function Main() {
                 ? "On Run"
                 : "In Jail",
             lastHearingDate: moment(item.lastDate).format("YYYY-MM-DD"),
+            chargesheetDate:moment(item.chargesheetDate).format("YYYY-MM-DD"),
             proposedDate: "TBD",
-            acceptedDate: "",
+            acceptedDate: "Loading",
             // ? moment(item.nextHearingDate).format("YYYY-MM-DD")
             // : "Select a Date",
           });
         });
         setRowsData(data);
         setTempRowsData(data);
-        // generateSampleInput(data);
+        generateSampleInput(data);
       })
       .catch((error) => {
         console.log(error);
@@ -347,7 +348,7 @@ function Main() {
             </div>
           </div>
         </div>
-       
+        
         <button
           style={{
             width: "10vw",
@@ -363,35 +364,6 @@ function Main() {
           }}
         >
           Logout
-        </button>
-      </div>
-      <div className="d-flex">
-      <button
-          style={{
-            width: "35vw",
-            height: "70px",
-            marginTop: "30px",
-            marginLeft: "6vw",
-          }}
-          type="button"
-          className="btn btn-primary custom-button"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
-          Add Data
-        </button>
-        <button
-          style={{
-            width: "35vw",
-            height: "70px",
-            marginTop: "30px",
-            marginLeft: "14vw",
-          }}
-          type="button"
-          className="btn btn-primary custom-button"
-          onClick={()=>{generateSampleInput(data)}}
-        >
-          Process Cases
         </button>
       </div>
       <div className="widget-container">
@@ -426,9 +398,9 @@ function Main() {
             onClick={() => setGreenClicked(!greenClicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>6</span>
+              <span style={{ fontSize: "76px" }}>60</span>
               <br></br>
-              <span>Cases need validation</span>
+              <span>Cases in this month</span>
             </p>
           </div>
           <div
@@ -442,17 +414,16 @@ function Main() {
             onClick={() => setRedClicked(!redClicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>80</span>
+              <span style={{ fontSize: "76px" }}>10</span>
               <br></br>
-              <span>Cases which has last hearing date {">"} 6 Month</span>
+              <span>Cases in this week</span>
             </p>
           </div>
         </div>
       </div>
-      
       <div className="react-table">
         <GridTable
-          columns={getColumns(
+          columns={getColumns2(
             { setRowsData },
             startDate,
             setStartDate,
