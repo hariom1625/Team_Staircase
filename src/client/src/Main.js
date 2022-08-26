@@ -184,7 +184,7 @@ function Main() {
           .then((text) => {
             algo1 = text;
             input1 = res.data.data;
-            submit(data);
+            //submit(data);
           });
       })
       .catch((error) => {
