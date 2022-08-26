@@ -97,7 +97,7 @@ const styles = {
   }
 };
 
-const getColumns = ({ setRowsData },startDate,setStartDate) => {
+const getColumns = ({ setRowsData },startDate,setStartDate,setCaseId) => {
   return [
     {
         id: 1,
@@ -106,7 +106,20 @@ const getColumns = ({ setRowsData },startDate,setStartDate) => {
         pinned: true,
         width:"100px",
         className:"bold-columns",
-        editable:false
+        editable:false,
+        cellRenderer: ({
+          tableManager,
+          value,
+          data,
+          column,
+          colIndex,
+          rowIndex
+        }) => (
+          <div >
+           <p style={{marginLeft:"45px",cursor:"pointer"}} data-bs-toggle="modal" data-bs-target="#caseModal" onClick={() => setCaseId(value)}>{value}</p>
+           
+          </div>
+        ),
         },
       {
         id: 2,

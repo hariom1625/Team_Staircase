@@ -90,6 +90,7 @@ function Main() {
   const [isLoading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [caseIdToSearch, setCaseIdToSearch] = useState("Type Case ID");
+  const [selectedCaseId, setCaseId] = useState("");
   const [newCaseData, setNewCaseData] = useState({
     case_id: "",
     domain: "",
@@ -104,7 +105,7 @@ function Main() {
       .get("http://localhost:4000/api/cases/getcase")
       .then((res) => {
         // console.log(res.data)
-
+        data =[];
         res.data.data.map((item, idx) => {
           let sections = "";
           item.section.map((temp) => {
@@ -115,6 +116,7 @@ function Main() {
             id: idx + 1,
             caseId: item.case_id,
             domain: item.domain,
+            details:item.details,
             sections,
             accusedStatus:
               item.accusedStatus === 0
@@ -143,6 +145,10 @@ function Main() {
       "YYYY-MM-DD"
     ).utc();
     newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc();
+    newCaseData.details={
+      heading:newCaseData.heading,
+      description:newCaseData.description
+    }
     axios
       .post("http://localhost:4000/api/cases/newCase", newCaseData)
       .then((res) => {
@@ -208,6 +214,7 @@ function Main() {
             id: idx + 1,
             caseId: item.case_id,
             domain: item.domain,
+            details:item.details,
             sections,
             accusedStatus:
               item.accusedStatus === 0
@@ -346,7 +353,7 @@ function Main() {
             marginLeft: "20px",
           }}
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary custom-button"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
         >
@@ -360,7 +367,7 @@ function Main() {
             marginLeft: "20px",
           }}
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary custom-button"
           onClick={() => {
             localStorage.setItem("isLoggedIn", "false");
             window.location.reload(true);
@@ -426,7 +433,7 @@ function Main() {
       </div>
       <div className="react-table">
         <GridTable
-          columns={getColumns({ setRowsData }, startDate, setStartDate)}
+          columns={getColumns({ setRowsData }, startDate, setStartDate,setCaseId)}
           rows={tempRowsData}
           isPaginated={false}
           // isLoading={isLoading}
@@ -563,6 +570,38 @@ function Main() {
                   ></input>
                   {/* <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> */}
                 </div>
+                <div class="mb-3">
+                  <label for="heading" class="form-label">
+                    Heading
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="heading"
+                    aria-describedby="heading"
+                    value={newCaseData.heading || ""}
+                    onChange={(event) => {
+                      let temp = JSON.parse(JSON.stringify(newCaseData));
+                      temp[event.target.id] = event.target.value;
+                      setNewCaseData(temp);
+                    }}
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">
+                    Description
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    aria-describedby="description"
+                    value={newCaseData.description || ""}
+                    onChange={(event) => {
+                      let temp = JSON.parse(JSON.stringify(newCaseData));
+                      temp[event.target.id] = event.target.value;
+                      setNewCaseData(temp);
+                    }}
+                  ></textarea>
+                </div>
               </form>
             </div>
             <div class="modal-footer">
@@ -585,6 +624,35 @@ function Main() {
           </div>
         </div>
       </div>
+      <div class="modal fade" id="caseModal" tabindex="-1" aria-labelledby="caseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="caseModalLabel">Case ID {selectedCaseId}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {/* <p>{JSON.stringify(rowsData.filter(item => item.caseId === selectedCaseId))}</p> */}
+
+       <h3>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0].heading : "" : "" : ""}</h3>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0] ?rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0].description : "" : "" : ""}</p>
+
+      <h5 style={{marginTop:"50px"}}> Sections Involved {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].domain : "Not Available" }: {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].sections : "" }</h5>
+      <h5> Chargesheet Filing Date : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].chargesheetDate : "Not Available" }</h5>
+      <h5 style={{marginBottom:"50px"}}> Last Hearing Date : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].lastDate : "Not Available" }</h5>
+      {/* <h5> Next Hearing Date Proposed By the System : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].chargesheetDate : "Not Available" }</h5> */}
+
+       <h5>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1].heading : "" : "" : ""}</h5>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1].description : "" : "" : ""}</p>
+       <h5>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2].heading : "" : "" : ""}</h5>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2].description : "" : "" : ""}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   );
 }

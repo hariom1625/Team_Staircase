@@ -24,8 +24,10 @@ router.post("/newCase", async (req, res) => {
     newCase.accusedStatus = req.body.accusedStatus || "";
     newCase.nextHearingDate = req.body.nextHearingDate || "";
     newCase.proposedDate = req.body.proposedDate || "";
+    newCase.details = req.body.details;
     console.log("Adding Case", newCase);
     let newCaseModel = new CaseInfo(newCase);
+    // console.log(newCase);
     await newCaseModel.save();
     res.send("New Case Added");
   } catch (error) {
