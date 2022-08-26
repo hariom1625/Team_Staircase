@@ -1,10 +1,27 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { useState, useEffect } from "react";
+import Select from 'react-select'
+
+
+const options = [
+  { value: '0', label: 'Registrar' },
+  { value: '1', label: 'Judge' },
+
+]
+
+const customStyles = {
+  control: base => ({
+    ...base,
+    height: 55,
+  })
+};
+
 
 function Login(props) {
   const [userName, setUserName] = useState();
   const [password, setPassword] = useState();
+  const [userType, setUserType] = useState();
 
   function checkPassword(e) {
     e.preventDefault();
@@ -42,6 +59,11 @@ function Login(props) {
           {/* <img class="mb-4" src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"></img> */}
           <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
+          <div class="form-floating" style={{ color: "black" ,marginBottom:"20px",marginTop:"60px"}}>
+          <Select styles={customStyles} placeholder={<div style={{color:"black"}}>User Type</div>} options={options} value={options.filter(item => item.label==userType)[0]} onChange={(value) => {console.log('onchange',value,value.label);setUserType(value.label)}} />
+           
+          </div>
+
           <div class="form-floating" style={{ color: "black" }}>
             <input
               type="email"
@@ -53,6 +75,7 @@ function Login(props) {
             />
             <label for="floatingInput">Email address</label>
           </div>
+
           <div
             class="form-floating"
             style={{ marginTop: "20px", color: "black" }}
