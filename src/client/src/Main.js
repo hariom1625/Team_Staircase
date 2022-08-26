@@ -99,13 +99,13 @@ function Main() {
     accusedStatus: "",
   });
 
-  const [sortedCases,setSortedCases] = useState("");
-  const reload  = () => {
+  const [sortedCases, setSortedCases] = useState("");
+  const reload = () => {
     axios
       .get("http://localhost:4000/api/cases/getcase")
       .then((res) => {
         // console.log(res.data)
-
+        data =[];
         res.data.data.map((item, idx) => {
           let sections = "";
           item.section.map((temp) => {
@@ -116,6 +116,7 @@ function Main() {
             id: idx + 1,
             caseId: item.case_id,
             domain: item.domain,
+            details:item.details,
             sections,
             accusedStatus:
               item.accusedStatus === 0
@@ -137,10 +138,17 @@ function Main() {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
   const addNewCase = () => {
-    newCaseData.chargesheetDate = moment(newCaseData.chargesheetDate, "YYYY-MM-DD").utc()
-    newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc()
+    newCaseData.chargesheetDate = moment(
+      newCaseData.chargesheetDate,
+      "YYYY-MM-DD"
+    ).utc();
+    newCaseData.lastDate = moment(newCaseData.lastDate, "YYYY-MM-DD").utc();
+    newCaseData.details={
+      heading:newCaseData.heading,
+      description:newCaseData.description
+    }
     axios
       .post("http://localhost:4000/api/cases/newCase", newCaseData)
       .then((res) => {
@@ -151,46 +159,44 @@ function Main() {
         console.log(error);
       });
   };
-  const prioritizeCases = (output,data) => {
+  const prioritizeCases = (output, data) => {
     let currDate = new Date();
     let bandWidth = 5;
     let temp = [];
-    output.split(/\r?\n/).forEach((item,idx) => {
+    output.split(/\r?\n/).forEach((item, idx) => {
       // if(item.length===0) return;
-      console.log(typeof item,item.length,item,idx,data)
-        if(item.length!=0 && data!=0){
-        if(idx!=0 && idx%bandWidth==0) currDate.setDate(currDate.getDate() + 1);
-        let tempCase = data.filter(item1 => item1.caseId === item)[0]
-  
-        if(!tempCase) console.log(tempCase,data,item);
+      console.log(typeof item, item.length, item, idx, data);
+      if (item.length != 0 && data != 0) {
+        if (idx != 0 && idx % bandWidth == 0)
+          currDate.setDate(currDate.getDate() + 1);
+        let tempCase = data.filter((item1) => item1.caseId === item)[0];
+
+        if (!tempCase) console.log(tempCase, data, item);
         tempCase.proposedDate = moment(currDate).format("YYYY-MM-DD");
         temp.push(tempCase);
-        }
-     
-    })
-    console.log('hurray',temp,data,currDate);
+      }
+    });
+    console.log("hurray", temp, data, currDate);
     setTempRowsData(temp);
-  }
+  };
   const generateSampleInput = (data) => {
     axios
       .get("http://localhost:4000/api/cases/sampleInput")
       .then((res) => {
-        console.log(res.data.data)
+        console.log(res.data.data);
         // setSampleInput(res.data.data)
         fetch(code)
-        .then((r) => r.text())
-        .then((text) => {
-          algo1 = text
-          input1 = res.data.data;
-          submit(data);
-        });
-     
-       
+          .then((r) => r.text())
+          .then((text) => {
+            algo1 = text;
+            input1 = res.data.data;
+            submit(data);
+          });
       })
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
   useEffect(() => {
     setLoading(true);
     axios
@@ -208,6 +214,7 @@ function Main() {
             id: idx + 1,
             caseId: item.case_id,
             domain: item.domain,
+            details:item.details,
             sections,
             accusedStatus:
               item.accusedStatus === 0
@@ -285,7 +292,7 @@ function Main() {
       const output = atob(jsonGetSolution.stdout);
       console.log(output);
       setSortedCases(output);
-      prioritizeCases(output,data)
+      prioritizeCases(output, data);
     } else if (jsonGetSolution.stderr) {
       const error = atob(jsonGetSolution.stderr);
       console.log(error + "err");
@@ -296,7 +303,7 @@ function Main() {
 
   return (
     <div className="Main">
-      <div className="d-flex" style={{padding:"30px"}}>
+      <div className="d-flex" style={{ padding: "30px" }}>
         <div className="search-bar" style={{ width: "85vw" }}>
           <div className="d-flex search-bar-box">
             <div>
@@ -346,7 +353,7 @@ function Main() {
             marginLeft: "20px",
           }}
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary custom-button"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
         >
@@ -360,9 +367,11 @@ function Main() {
             marginLeft: "20px",
           }}
           type="button"
-          className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          className="btn btn-primary custom-button"
+          onClick={() => {
+            localStorage.setItem("isLoggedIn", "false");
+            window.location.reload(true);
+          }}
         >
           Logout
         </button>
@@ -623,8 +632,20 @@ function Main() {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-       <h3>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].heading : ""}</h3>
-       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].description : ""}</p>
+        {/* <p>{JSON.stringify(rowsData.filter(item => item.caseId === selectedCaseId))}</p> */}
+
+       <h3>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0].heading : "" : "" : ""}</h3>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0] ?rowsData.filter(item => item.caseId===selectedCaseId)[0].details[0].description : "" : "" : ""}</p>
+
+      <h5 style={{marginTop:"50px"}}> Sections Involved {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].domain : "Not Available" }: {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].sections : "" }</h5>
+      <h5> Chargesheet Filing Date : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].chargesheetDate : "Not Available" }</h5>
+      <h5 style={{marginBottom:"50px"}}> Last Hearing Date : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].lastDate : "Not Available" }</h5>
+      {/* <h5> Next Hearing Date Proposed By the System : {rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].chargesheetDate : "Not Available" }</h5> */}
+
+       <h5>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1].heading : "" : "" : ""}</h5>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[1].description : "" : "" : ""}</p>
+       <h5>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2].heading : "" : "" : ""}</h5>
+       <p>{rowsData.filter(item => item.caseId===selectedCaseId)[0] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2] ? rowsData.filter(item => item.caseId===selectedCaseId)[0].details[2].description : "" : "" : ""}</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

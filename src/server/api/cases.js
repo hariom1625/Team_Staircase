@@ -11,8 +11,6 @@ var mp = new Map([
 router.post("/newCase", async (req, res) => {
   try {
     const newCase = new CaseInfo();
-    console.log(req.body);
-    console.log(mp.get(3));
     newCase.case_id = req.body.case_id;
     newCase.domain = req.body.domain;
 
@@ -26,8 +24,10 @@ router.post("/newCase", async (req, res) => {
     newCase.accusedStatus = req.body.accusedStatus || "";
     newCase.nextHearingDate = req.body.nextHearingDate || "";
     newCase.proposedDate = req.body.proposedDate || "";
-    console.log('Adding Case',newCase)
+    newCase.details = req.body.details;
+    console.log("Adding Case", newCase);
     let newCaseModel = new CaseInfo(newCase);
+    // console.log(newCase);
     await newCaseModel.save();
     res.send("New Case Added");
   } catch (error) {
@@ -39,7 +39,6 @@ router.post("/newCase", async (req, res) => {
 router.get("/getCase", async (req, res) => {
   try {
     const caseInfo = await CaseInfo.find({});
-    console.log(caseInfo);
     res.status(200).send({ data: caseInfo });
   } catch (error) {
     console.log(error);
@@ -50,7 +49,6 @@ router.get("/getCase", async (req, res) => {
 router.get("/sampleInput", async (req, res) => {
   try {
     const caseInfo = await CaseInfo.find({});
-    console.log(caseInfo);
     let ans = "";
     ans += caseInfo.length.toString() + " ";
     caseInfo.map((item) => {

@@ -22,6 +22,7 @@ app.use(
 );
 
 app.use("/api/cases", require("./api/cases"));
+app.use("/api/user", require("./api/user"));
 
 let port = process.env.PORT;
 if (port == null || port == "") {
