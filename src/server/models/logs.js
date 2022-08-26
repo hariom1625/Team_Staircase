@@ -11,6 +11,9 @@ const logInfo = new mongoose.Schema(
     ipAddress: {
       type: String,
     },
+    statement: {
+      type: String,
+    },
   },
   {
     timeStamps: {

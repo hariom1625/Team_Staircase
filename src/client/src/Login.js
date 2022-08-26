@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import Select from 'react-select'
 
 
@@ -37,6 +38,19 @@ function Login(props) {
         password === process.env.REACT_APP_PASSWORD) ||
       localStorage.getItem("isLoggedIn") === "true"
     ) {
+      axios
+        .get("https://geolocation-db.com/json/")
+        .then((res) => {
+          console.log(res, res.data.IPv4);
+          const ipAddress = res.data.IPv4;
+
+          const data = { userName, ipAddress };
+          axios
+            .post("http://localhost:4000/api/user/login", data)
+            .then((res) => {})
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
       localStorage.setItem("isLoggedIn", "true");
       props.setLogged(true);
     } else {
