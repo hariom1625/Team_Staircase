@@ -2,6 +2,13 @@ import logo from "./logo.svg";
 import "./App.css";
 import Login from "./Login";
 import Main from "./Main";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Switch,
+  Route,
+} from "react-router-dom";
+
 import { useState } from "react";
 
 function App() {
@@ -9,12 +16,12 @@ function App() {
 
   return (
     <div className="App">
-      {console.log(localStorage.getItem("isLoggedIn"))}
-      {localStorage.getItem("isLoggedIn") === "true" && <Main></Main>}
-      {(!localStorage.getItem("isLoggedIn") ||
-        localStorage.getItem("isLoggedIn") === "false") && (
-        <Login setLogged={setLogged} />
-      )}
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<Login />} />
+          <Route exact path="/registrarView" element={<Main />} />
+        </Routes>
+      </Router>
     </div>
   );
 }

@@ -37,7 +37,20 @@ function Login(props) {
       localStorage.setItem("isLoggedIn", "true");
       props.setLogged(true);
     } else {
-      alert("Wrong Password");
+      alert("Incorrect credentials");
+      axios
+        .get("https://geolocation-db.com/json/")
+        .then((res) => {
+          console.log(res, res.data.IPv4);
+          const ipAddress = res.data.IPv4;
+
+          const data = { userName, ipAddress };
+          axios
+            .post("http://localhost:4000/api/user/incorrectCredentials", data)
+            .then((res) => {})
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
     }
   }
   return (
