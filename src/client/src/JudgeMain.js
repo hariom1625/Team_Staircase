@@ -414,13 +414,14 @@ function Main() {
             onClick={() => setRedClicked(!redClicked)}
           >
             <p style={{ textAlign: "center", margin: "10px 0px" }}>
-              <span style={{ fontSize: "76px" }}>10</span>
+              <span style={{ fontSize: "76px" }}>20</span>
               <br></br>
               <span>Cases in this week</span>
             </p>
           </div>
         </div>
       </div>
+      <p style={{marginLeft:"70px"}}> Click on the Case ID to see more details about the case</p>
       <div className="react-table">
         <GridTable
           columns={getColumns2(

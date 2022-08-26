@@ -9,6 +9,8 @@ import axios from "axios";
 import moment from "moment";
 import code from "./MainAlgoToPrioritizeInCPP.cpp";
 import input from "./SampleInput.txt";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 // const data = [
 //   {
@@ -378,7 +380,7 @@ function Main() {
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
         >
-          Add Data
+          Insert New Case
         </button>
         <button
           style={{
@@ -449,7 +451,7 @@ function Main() {
           </div>
         </div>
       </div>
-      
+      <p style={{marginLeft:"70px"}}> Click on the Case ID to see more details about the case</p>
       <div className="react-table">
         <GridTable
           columns={getColumns(
@@ -580,6 +582,7 @@ function Main() {
                   <label for="lastDate" class="form-label">
                     Last Hearing Date
                   </label>
+                  
                   <input
                     type="text"
                     class="form-control"

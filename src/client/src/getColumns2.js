@@ -116,7 +116,7 @@ const getColumns = ({ setRowsData },startDate,setStartDate,setCaseId) => {
           rowIndex
         }) => (
           <div >
-           <p style={{marginLeft:"45px",cursor:"pointer"}} data-bs-toggle="modal" data-bs-target="#caseModal" onClick={() => setCaseId(value)}>{value}</p>
+           <p style={{marginLeft:"45px",cursor:"pointer"}} data-bs-toggle="modal" data-bs-target="#caseModal" onClick={() => setCaseId(value)}>{value} <i class="fas fa-external-link"></i></p>
            
           </div>
         ),
@@ -124,7 +124,7 @@ const getColumns = ({ setRowsData },startDate,setStartDate,setCaseId) => {
       {
         id: 2,
         field: "domain",
-        label: "Case Type",
+        label: "Category",
         className:"bold-columns",
         editable:false
         },
@@ -169,5 +169,4 @@ const getColumns = ({ setRowsData },startDate,setStartDate,setCaseId) => {
     
   ];
 };
-
 export default getColumns;
